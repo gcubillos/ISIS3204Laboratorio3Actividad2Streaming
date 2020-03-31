@@ -1,4 +1,4 @@
-package Java_Video_Stream;
+package video_streaming;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
