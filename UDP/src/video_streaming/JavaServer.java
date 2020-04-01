@@ -32,7 +32,7 @@ public class JavaServer {
 
 	public static void main(String[] args) throws Exception {
 
-		
+		NativeLibrary.addSearchPath("libvlc", "E:\\VLC");
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Por favor indique la cantidad máxima de clientes");
 		

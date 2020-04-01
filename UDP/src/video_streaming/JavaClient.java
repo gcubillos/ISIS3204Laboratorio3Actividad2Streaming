@@ -3,6 +3,7 @@ package video_streaming;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Canvas;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -58,7 +60,7 @@ public class JavaClient {
         //.getByName(String hostname); "CL11"
         System.out.println(inetAddress);
 
-        Socket clientSocket = new Socket(inetAddress, 6782);
+        Socket clientSocket = new Socket(inetAddress, 5624);
         DataOutputStream outToServer =
                 new DataOutputStream(clientSocket.getOutputStream());
 
@@ -77,9 +79,12 @@ public class JavaClient {
 
 class Vidshow extends Thread {
 
+	public boolean pause = false;
+	public Object pauser = new Object();
     JFrame jf = new JFrame();
     public static JPanel jp = new JPanel(new GridLayout(2,1));
     public static JPanel half = new JPanel(new GridLayout(3,1));
+    public static JButton jb = new JButton("Play/Pause");
     JLabel jl = new JLabel();
     public static JTextArea ta,tb;
     
@@ -93,6 +98,7 @@ class Vidshow extends Thread {
     public Vidshow() throws Exception {
         //sc = mysoc;
         //sc.setTcpNoDelay(true);
+    	
         jf.setSize(640, 960);
         jf.setTitle("Client Show");
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,6 +107,7 @@ class Vidshow extends Thread {
         jf.setVisible(true);
         jp.add(jl);
         jp.add(half);
+        jp.add(jb);
         jf.add(jp);
         
         
@@ -114,9 +121,16 @@ class Vidshow extends Thread {
         jpane.setViewportView(ta);
         half.add(jpane);
         half.add(tb);
+        half.add(jb);
         ta.setText("Begins\n");
         
-        
+        jb.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pause = !pause;
+            }
+        });
     }
 
     @Override
@@ -133,6 +147,10 @@ class Vidshow extends Thread {
                 ByteArrayInputStream bais = new ByteArrayInputStream(rcvbyte);
                 
                 bf = ImageIO.read(bais);
+                
+                if(pause) {
+                	Thread.sleep(3000);
+                }
 
                 if (bf != null) {
                     //jf.setVisible(true);
@@ -158,6 +176,7 @@ class CThread extends Thread {
 
     BufferedReader inFromServer;
     Button sender = new Button("Send Text");
+    Button pp = new Button("Play/Pause");
     DataOutputStream outToServer;
     public static String sentence;
     int RW_Flag;
