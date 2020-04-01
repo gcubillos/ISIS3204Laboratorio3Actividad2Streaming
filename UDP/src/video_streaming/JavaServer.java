@@ -19,37 +19,39 @@ import java.awt.event.*;
 
 public class JavaServer {
 
+	static final String servidor="localhost";
 	public static InetAddress[] inet;
-	public static int cantidadClientes, MAX_SIZE=62000;
+	public static int clientes, MAX_SIZE=62000;
 	public static int[] port;
 	public static int i;
 	static int count = 0;
 	public static BufferedReader[] inFromClient;
 	public static DataOutputStream[] outToClient;
-	static final String ADDRESS="localhost";
+	static final String rutaVLC = "C:\\Program Files (x86)\\VideoLAN\\VLC"; 
+	
 
 	public static void main(String[] args) throws Exception {
 
-		@SuppressWarnings("resource")
+		
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Por favor indique la cantidad máxima de clientes");
-		@SuppressWarnings("unused")
+		
 		JavaServer jv = new JavaServer(sc.nextInt());
 	}
 
 	public JavaServer(int cantClientes) throws Exception {
-		JavaServer.cantidadClientes=cantClientes;
-		NativeLibrary.addSearchPath("libvlc", "C:\\Users\\Administrator\\Desktop\\vlc-3.0.8");
+		JavaServer.clientes=cantClientes;
+		NativeLibrary.addSearchPath("libvlc", rutaVLC );
 
-		JavaServer.inet = new InetAddress[cantidadClientes];
-		port = new int[cantidadClientes];
+		JavaServer.inet = new InetAddress[clientes];
+		port = new int[clientes];
 
 		@SuppressWarnings("resource")
-		ServerSocket welcomeSocket = new ServerSocket(6782);
+		ServerSocket welcomeSocket = new ServerSocket(5624);
 		System.out.println("Conexion " + ((welcomeSocket.isClosed()) ? "cerrada!" : "abierta"));
-		Socket connectionSocket[] = new Socket[cantidadClientes];
-		inFromClient = new BufferedReader[cantidadClientes];
-		outToClient = new DataOutputStream[cantidadClientes];
+		Socket connectionSocket[] = new Socket[clientes];
+		inFromClient = new BufferedReader[clientes];
+		outToClient = new DataOutputStream[clientes];
 
 		/*
 		 * sockets UDP _________________________________________________________________
@@ -64,7 +66,7 @@ public class JavaServer {
 
 		i = 0;
 
-		TextThread[] st = new TextThread[cantidadClientes];
+		TextThread[] st = new TextThread[clientes];
 
 		while (true) {
 			//			System.out.println("Puerto del servidor: " + serv.getPort());
@@ -92,7 +94,7 @@ public class JavaServer {
 			st[i].start();
 			sender.start();
 
-			if (i++ == cantidadClientes)
+			if (i++ == clientes)
 				break;
 		}
 	}
@@ -177,7 +179,7 @@ class SubPlayer {
 	public static JFrame frame;
 	public static JTextArea ta;
 	public static int xpos = 0, ypos = 0;
-	String url = "C:\\Users\\ander\\Desktop\\viiid.mp4";
+	
 
 	public SubPlayer() {
 
@@ -200,7 +202,7 @@ class SubPlayer {
 		mediaPlayer.setVideoSurface(videoSurface);
 
 		// Construction of the jframe :
-		frame = new JFrame("UDP server interface (Grupo 4)");
+		frame = new JFrame("Servidor de streaming ");
 		// frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocation(200, 0);
