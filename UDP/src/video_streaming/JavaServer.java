@@ -39,18 +39,19 @@ public class JavaServer {
 		while (true){
 			System.out.println("Indique el puerto del servidor");
 			int puertoServ = sc.nextInt();
-			
+			System.out.println("Indique el puerto de transmisión del servidor");
+			int puertoTrans = sc.nextInt();
 			
 			System.out.println("Indique la cantidad de clientes que quiere atender al tiempo");
 			
 			int clientes = sc.nextInt();
-			JavaServer jv = new JavaServer(clientes,puertoServ);
+			JavaServer jv = new JavaServer(clientes,puertoServ,puertoTrans);
 		}
 			
 		
 	}
 
-	public JavaServer(int cantClientes, int Ppuerto) throws Exception {
+	public JavaServer(int cantClientes, int Ppuerto, int pPuertoT) throws Exception {
 		JavaServer.clientes=cantClientes;
 		NativeLibrary.addSearchPath("libvlc", rutaVLC );
 
@@ -63,12 +64,14 @@ public class JavaServer {
 		Socket connectionSocket[] = new Socket[clientes];
 		inFromClient = new BufferedReader[clientes];
 		outToClient = new DataOutputStream[clientes];
+		
 
 		/*
 		 * sockets UDP _________________________________________________________________
 		 */
 		
-		DatagramSocket serv = new DatagramSocket(4321);
+		DatagramSocket serv = new DatagramSocket(pPuertoT);
+		
 		byte[] buf = new byte[62000];
 		// sockets de conexión
 		DatagramPacket dp = new DatagramPacket(buf, buf.length);
@@ -81,6 +84,7 @@ public class JavaServer {
 		TextThread[] st = new TextThread[clientes];
 
 		while (true) {
+			
 			//			System.out.println("Puerto del servidor: " + serv.getPort());
 			serv.receive(dp);
 			//			System.out.println("Data recivida: " + new String(dp.getData()));
@@ -101,6 +105,9 @@ public class JavaServer {
 			inFromClient[i] = new BufferedReader(new InputStreamReader(connectionSocket[i].getInputStream()));
 			outToClient[i] = new DataOutputStream(connectionSocket[i].getOutputStream());
 			outToClient[i].writeBytes("Connected: from Server\n");
+			outToClient[i].writeBytes("Puerto de transmisión");
+			outToClient[i].write(pPuertoT);
+			
 
 			st[i] = new TextThread(i);
 			st[i].start();

@@ -42,12 +42,31 @@ public class JavaClient {
         System.out.println("Indique el puerto del servidor a conectar");
         int pServidor = sc.nextInt();
         
+        System.out.println("Indique el puerto de transmisión del servidor");
+        int pTrans = sc.nextInt();
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        
         byte[] init = new byte[62000];
         init = "givedata".getBytes();
         
+        Socket clientSocket = new Socket(inetAddress, pServidor);
+        DataOutputStream outToServer =
+                new DataOutputStream(clientSocket.getOutputStream());
+
+        BufferedReader inFromServer =
+                new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        outToServer.writeBytes("cliente conectado\n");
+
+        CThread write = new CThread(inFromServer, outToServer, 0);
+        CThread read = new CThread(inFromServer, outToServer, 1);
+        
         InetAddress addr = InetAddress.getLocalHost();
         
-        DatagramPacket dp = new DatagramPacket(init,init.length,addr,4321);
+//        System.out.println(inFromServer.readLine());
+//        System.out.println(inFromServer.readLine());
+//        System.out.println(inFromServer.readLine());
+        
+        DatagramPacket dp = new DatagramPacket(init,init.length,addr,pTrans);
         
         ds.send(dp);
         
@@ -60,22 +79,16 @@ public class JavaClient {
         Vidshow vd = new Vidshow();
         vd.start();
         
-        String modifiedSentence;
+      
 
-        InetAddress inetAddress = InetAddress.getLocalHost();
+       
         //.getByName(String hostname); "CL11"
         System.out.println(inetAddress);
 
-        Socket clientSocket = new Socket(inetAddress, pServidor);
-        DataOutputStream outToServer =
-                new DataOutputStream(clientSocket.getOutputStream());
+      
+        
+        
 
-        BufferedReader inFromServer =
-                new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        outToServer.writeBytes("cliente conectado\n");
-
-        CThread write = new CThread(inFromServer, outToServer, 0);
-        CThread read = new CThread(inFromServer, outToServer, 1);
 
         write.join();
         read.join();
