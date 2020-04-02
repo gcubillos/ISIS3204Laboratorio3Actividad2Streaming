@@ -34,12 +34,23 @@ public class JavaServer {
 
 		NativeLibrary.addSearchPath("libvlc", "E:\\VLC");
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Por favor indique la cantidad máxima de clientes");
 		
-		JavaServer jv = new JavaServer(sc.nextInt());
+		
+		while (true){
+			System.out.println("Indique el puerto del servidor");
+			int puertoServ = sc.nextInt();
+			
+			
+			System.out.println("Indique la cantidad de clientes que quiere atender al tiempo");
+			
+			int clientes = sc.nextInt();
+			JavaServer jv = new JavaServer(clientes,puertoServ);
+		}
+			
+		
 	}
 
-	public JavaServer(int cantClientes) throws Exception {
+	public JavaServer(int cantClientes, int Ppuerto) throws Exception {
 		JavaServer.clientes=cantClientes;
 		NativeLibrary.addSearchPath("libvlc", rutaVLC );
 
@@ -47,7 +58,7 @@ public class JavaServer {
 		port = new int[clientes];
 
 		@SuppressWarnings("resource")
-		ServerSocket welcomeSocket = new ServerSocket(5624);
+		ServerSocket welcomeSocket = new ServerSocket(Ppuerto);
 		System.out.println("Conexion " + ((welcomeSocket.isClosed()) ? "cerrada!" : "abierta"));
 		Socket connectionSocket[] = new Socket[clientes];
 		inFromClient = new BufferedReader[clientes];
@@ -56,6 +67,7 @@ public class JavaServer {
 		/*
 		 * sockets UDP _________________________________________________________________
 		 */
+		
 		DatagramSocket serv = new DatagramSocket(4321);
 		byte[] buf = new byte[62000];
 		// sockets de conexión

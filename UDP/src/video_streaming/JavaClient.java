@@ -20,6 +20,8 @@ import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,6 +37,10 @@ public class JavaClient {
 
     public static void main(String[] args) throws Exception {
         ds = new DatagramSocket();
+        
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Indique el puerto del servidor a conectar");
+        int pServidor = sc.nextInt();
         
         byte[] init = new byte[62000];
         init = "givedata".getBytes();
@@ -60,13 +66,13 @@ public class JavaClient {
         //.getByName(String hostname); "CL11"
         System.out.println(inetAddress);
 
-        Socket clientSocket = new Socket(inetAddress, 5624);
+        Socket clientSocket = new Socket(inetAddress, pServidor);
         DataOutputStream outToServer =
                 new DataOutputStream(clientSocket.getOutputStream());
 
         BufferedReader inFromServer =
                 new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        outToServer.writeBytes("Thanks man\n");
+        outToServer.writeBytes("cliente conectado\n");
 
         CThread write = new CThread(inFromServer, outToServer, 0);
         CThread read = new CThread(inFromServer, outToServer, 1);
@@ -137,13 +143,13 @@ class Vidshow extends Thread {
     public void run() {
 
         try {
-            System.out.println("got in");
+            
             do {
-                System.out.println("doing");
+               
                 System.out.println(JavaClient.ds.getPort());
                 
                 JavaClient.ds.receive(dp);
-                System.out.println("received");
+                
                 ByteArrayInputStream bais = new ByteArrayInputStream(rcvbyte);
                 
                 bf = ImageIO.read(bais);
