@@ -1,13 +1,17 @@
 package video_streaming;
 
+import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -30,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 public class JavaClient {
@@ -99,11 +104,13 @@ public class JavaClient {
 class Vidshow extends Thread {
 
 	public boolean pause = false;
+	public boolean terminar = false;
 	public Object pauser = new Object();
     JFrame jf = new JFrame();
     public static JPanel jp = new JPanel(new GridLayout(2,1));
     public static JPanel half = new JPanel(new GridLayout(3,1));
     public static JButton jb = new JButton("Play/Pause");
+    public static JButton jcc = new JButton("Cambiar Canal");
     JLabel jl = new JLabel();
     public static JTextArea ta,tb;
     
@@ -126,7 +133,6 @@ class Vidshow extends Thread {
         jf.setVisible(true);
         jp.add(jl);
         jp.add(half);
-        jp.add(jb);
         jf.add(jp);
         
         
@@ -141,7 +147,16 @@ class Vidshow extends Thread {
         half.add(jpane);
         half.add(tb);
         half.add(jb);
+        half.add(jcc);
         ta.setText("Begins\n");
+        
+        jcc.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				terminar = true;
+			}
+		});
         
         jb.addActionListener(new ActionListener() {
 
@@ -169,6 +184,13 @@ class Vidshow extends Thread {
                 
                 if(pause) {
                 	Thread.sleep(3000);
+                }
+                
+                if(terminar) {
+                	JavaClient cl = new JavaClient();
+                	String[] args = {};
+                	cl.main(args);
+                	System.exit(0);
                 }
 
                 if (bf != null) {
